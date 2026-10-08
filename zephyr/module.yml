@@ -1,0 +1,6 @@
+name: codz-sdk
+build:
+  cmake: .
+  kconfig: Kconfig.codz-sdk
+  settings:
+    board_root: .

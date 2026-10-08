@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#define USE_NON_SECURE_ADDRESS_MAP 1
+
+#include <arm/nordic/nrf54l15_cpuapp_ns.dtsi>
+#include "cod_nrp_node_nrf54l15_cpuapp_common.dtsi"
+
+/ {
+	chosen {
+		/* Unavailable now, to be re-enabled later */
+		//zephyr,console = &uart21;
+		//zephyr,shell-uart = &uart21;
+		//zephyr,uart-mcumgr = &uart21;
+		//zephyr,bt-mon-uart = &uart21;
+
+		zephyr,code-partition = &slot0_ns_partition;
+		zephyr,sram = &sram0_ns;
+		zephyr,entropy = &psa_rng;
+
+		zephyr,bt-c2h-uart = &uart20;
+		zephyr,bt-hci = &bt_hci_sdc;
+
+		/* FIXME: add support for crash and reset signals (INT1 / INT2) */
+	};
+
+	/delete-node/ rng;
+
+	psa_rng: psa-rng {
+		status = "okay";
+	};
+};
+
+&bt_hci_sdc {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+	sense-edge-mask = <((1 << 5) | (1 << 8) | (1 << 9))>;
+};
+
+/* GPIO Tasks and Events for port P1 */
+&gpiote20 {
+	status = "okay";
+};
+
+/* FIXME: Re-enable HCI UART once we have proper crash / reset ISR wired */
+&uart20 {
+	status = "disabled";
+	current-speed = <1000000>;
+	/delete-property/ hw-flow-control;
+	zephyr,pm-device-runtime-auto;
+
+	pinctrl-0 = <&uart20_default>;
+	pinctrl-1 = <&uart20_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	lpuart: nrf-sw-lpuart {
+		compatible = "nordic,nrf-sw-lpuart";
+		status = "disabled";
+		req-pin = <40>; // P1.08 -> 32+8
+		rdy-pin = <41>; // P1.09 -> 32+9
+	};
+};
+
+&uart30 {
+	status = "disabled";
+};
+
+/* Include default memory partition configuration file */
+#include <vendor/nordic/nrf54l15_cpuapp_ns_partition.dtsi>

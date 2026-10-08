@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <nordic/nrf54l15_cpuapp.dtsi>
+#include "cod_nrp_node_nrf54l15_cpuapp_common.dtsi"
+
+/ {
+	chosen {
+		zephyr,console = &uart30;
+		zephyr,shell-uart = &uart30;
+		zephyr,uart-mcumgr = &uart30;
+		zephyr,bt-mon-uart = &uart30;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,sram = &cpuapp_sram;
+	};
+};
+
+/* Include default memory partition configuration file */
+#include <vendor/nordic/nrf54l15_cpuapp_partition.dtsi>

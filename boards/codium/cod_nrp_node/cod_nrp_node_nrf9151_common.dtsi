@@ -1,0 +1,146 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "cod_nrp_node_nrf9151_common-pinctrl.dtsi"
+
+/ {
+	model = "Codium NR+ node - nRF9151";
+	compatible = "codium,cod-nrp-node-nrf9151";
+
+	chosen {
+		zephyr,flash = &flash0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,uart-mcumgr = &uart0;
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+
+		button1: button1 {
+			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
+			label = "User Button";
+		};
+	};
+};
+
+&adc {
+	status = "disabled";
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+// UART 0 for logs and shell in secure and non-secure worlds
+&uart0 {
+	status = "okay";
+	current-speed = <115200>;
+	/delete-property/ hw-flow-control;
+
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&uart1 {
+	status = "disabled";
+};
+
+&i2c2 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	clock-frequency = <400000>;
+	pinctrl-0 = <&i2c2_default>;
+	pinctrl-1 = <&i2c2_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	// STMicroelectronics LSM6DSL 6-axis accelerometer and gyroscope accessed through i2c bus
+	lsm6dsl: lsm6dsl@6a {
+		compatible = "st,lsm6dsl";
+		status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg = <0x6A>;
+		irq-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+
+		// STMicroelectronics LIS2MDL magnetometer, wired directly to LSM6DSL
+		lis2mdl: lis2mdl@40 {
+			compatible = "st,lis2mdl";
+			status = "okay";
+			reg = <0x40>;
+		};
+	};
+
+	sht40: sht4x@44 {
+		compatible = "sensirion,sht4x";
+		status = "okay";
+		repeatability = <2>;
+		reg = <0x44>;
+		friendly-name = "sht40";
+	};
+
+	// PMIC npm1300
+	npm1300: npm1300@6b {
+		compatible = "nordic,npm1300";
+		status = "okay";
+		reg = <0x6b>;
+
+		npm1300_charger: npm1300-charger {
+			compatible = "nordic,npm1300-charger";
+			status = "okay";
+			charging-enable;
+			term-microvolt = <4200000>; //uV => 4.2V
+			current-microamp = <500000>; // uA => 500mA
+			dischg-limit-microamp = <1000000>; // uA => 1A
+			vbus-limit-microamp = <500000>; // uA => 500mA
+			thermistor-ohms = <0>; // Ohms => 0Ohms
+			thermistor-beta = <0>;
+			term-current-percent = <10>;
+		};
+
+		npm1300_led: npm1300-led {
+			compatible = "nordic,npm1300-led";
+			status = "okay";
+			nordic,led0-mode = "host";
+			nordic,led1-mode = "charging";
+			nordic,led2-mode = "error";
+		};
+	};
+};
+
+&spi3 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	zephyr,pm-device-runtime-auto;
+
+	cs-gpios = <&gpio0 31 GPIO_ACTIVE_LOW>;
+	pinctrl-0 = <&spi3_default>;
+	pinctrl-1 = <&spi3_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	mx25r1635f: mx25r1635f@0 {
+		compatible = "jedec,spi-nor";
+		status = "okay";
+		zephyr,pm-device-runtime-auto;
+
+		reg = <0>;
+		spi-max-frequency = <8000000>;
+		size = <16777216>; // 16 Mib
+		has-dpd;
+		t-enter-dpd = <10000>;
+		t-exit-dpd = <35000>;
+		jedec-id = [c2 28 15];
+		mxicy,mx25r-power-mode = "low-power";
+	};
+};
+
+/* Include default memory partition configuration file */
+#include <nordic/nrf91xx_partition.dtsi>

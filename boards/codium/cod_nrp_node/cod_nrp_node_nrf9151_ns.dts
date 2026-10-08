@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <arm/nordic/nrf9151_ns_laca.dtsi>
+#include "cod_nrp_node_nrf9151_common.dtsi"
+
+/ {
+	chosen {
+		zephyr,flash = &flash0;
+		zephyr,sram = &sram0_ns_app;
+		zephyr,code-partition = &slot0_ns_partition;
+		zephyr,bt-hci=&bt_hci_uart;
+
+		/* FIXME: add support for crash and reset signals (INT1 / INT2) */
+	};
+};
+
+&gpio0 {
+	// Use sense mechanism for GPIO edge detection on BLE LPUART REQ / RDY
+	sense-edge-mask = <((1 << 6) | (1 << 7))>;
+};
+
+&gpiote {
+	// Interrupts higher priority to lower radio latency
+	interrupts = <49 NRF_DEFAULT_IRQ_PRIORITY>;
+};
+
+/* FIXME: re-enable when we have proper support for BT crash / reset */
+&uart1 {
+	status = "disabled";
+	current-speed = <1000000>;
+	/delete-property/ hw-flow-control;
+	zephyr,pm-device-runtime-auto;
+
+	pinctrl-0 = <&uart1_default>;
+	pinctrl-1 = <&uart1_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	lpuart: nrf-sw-lpuart {
+		compatible = "nordic,nrf-sw-lpuart";
+		status = "disabled";
+		req-pin = <6>; // P0.06
+		rdy-pin = <7>; // P0.07
+
+		bt_hci_uart: bt_hci_uart {
+			compatible = "zephyr,bt-hci-uart";
+			status = "disabled";
+		};
+	};
+};

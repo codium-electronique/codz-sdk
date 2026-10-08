@@ -1,0 +1,19 @@
+# Copyright (c) 2026 Codium Electronique
+# SPDX-License-Identifier: Apache-2.0
+
+identifier: cod_nrp_node/nrf9151/ns
+name: COD-NRP-NODE-nRF9151-Non-Secure
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - zephyr
+ram: 128
+flash: 192
+supported:
+  - gpio
+  - spi
+  - i2c
+  - watchdog
+vendor: codium
+sysbuild: true

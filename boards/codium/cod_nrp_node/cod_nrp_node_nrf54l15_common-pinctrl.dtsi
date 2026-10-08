@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&pinctrl {
+	/* UART20 used as LPUART HCI interface with 9151 host */
+	/omit-if-no-ref/
+	uart20_default: uart20_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 1, 6)>;
+		};
+
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 1, 7)>;
+			bias-pull-up;
+		};
+	};
+
+	/omit-if-no-ref/
+	uart20_sleep: uart20_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 1, 6)>;
+			low-power-enable;
+			bias-pull-up;
+		};
+
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 1, 7)>;
+			low-power-enable;
+		};
+	};
+
+	/* b0, mcuboot and TF-M logs */
+	/omit-if-no-ref/
+	uart30_default: uart30_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 0)>;
+		};
+
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 0, 1)>;
+			bias-pull-up;
+		};
+	};
+
+	/omit-if-no-ref/
+	uart30_sleep: uart30_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 0)>,
+				<NRF_PSEL(UART_RX, 0, 1)>;
+			low-power-enable;
+		};
+	};
+};

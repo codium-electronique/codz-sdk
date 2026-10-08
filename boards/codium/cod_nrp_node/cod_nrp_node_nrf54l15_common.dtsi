@@ -1,0 +1,12 @@
+/*
+ * Copyright (c) 2026 Codium Electronique
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "cod_nrp_node_nrf54l15_common-pinctrl.dtsi"
+
+/ {
+	aliases {
+		watchdog0 = &wdt31;
+	};
+};
