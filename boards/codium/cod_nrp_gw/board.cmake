@@ -10,7 +10,9 @@ board_runner_args(jlink "--device=nRF9151_xxCA" "--speed=4000" "--tool-opt=-jlin
 
 # Runs on the NR+Gate itself: the gateway's own openocd (libgpiod adapter, not
 # in the Zephyr SDK's build) with its site folder, where cod-nrp-gw.cfg drives
-# the nRF9151 SWD. No RTT config, the runner only flashes.
+# the nRF9151 SWD. No RTT config, the runner only flashes. The two paths are
+# those of the NR+Gate image: on another host override them with
+# `west flash -r openocd --openocd=<path> --openocd-search=<dir>`.
 board_runner_args(openocd --openocd=/usr/bin/openocd --openocd-search=/usr/share/openocd/site --config cod-nrp-gw.cfg)
 
 include(${ZEPHYR_BASE}/boards/common/nrfutil.board.cmake)

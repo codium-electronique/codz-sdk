@@ -20,6 +20,12 @@ nrfutil device program --firmware <nr+-modem-firmware.zip>
 west flash -d build/cod_nrp_node/nrf9151/ns/dectnrp-driver
 ```
 
+On a NR+Gate (`cod_nrp_gw`) `west flash -r openocd` runs the gateway's own
+OpenOCD, whose paths (`--openocd=/usr/bin/openocd`,
+`--openocd-search=/usr/share/openocd/site`) are those of the gateway image.
+On another host, override them:
+`west flash -r openocd --openocd=<path> --openocd-search=<dir>`.
+
 ## Debug configurations
 
 Debug configs for vscode cortex-debug extension, one is for direct JLink use, second one is when using the openocd server on a Codium Gateway dev board (needs to be adapted for your app / build settings)
