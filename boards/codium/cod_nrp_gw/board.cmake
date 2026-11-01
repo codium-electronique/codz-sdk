@@ -8,9 +8,10 @@ endif()
 set(JLINKSCRIPTFILE ${CMAKE_CURRENT_LIST_DIR}/support/nrf9151_connect_under_reset.JLinkScript)
 board_runner_args(jlink "--device=nRF9151_xxCA" "--speed=4000" "--tool-opt=-jlinkscriptfile ${JLINKSCRIPTFILE}")
 
-# Runs on the NR+Gate itself, where the site config cod-nrp-gw.cfg drives the
-# nRF9151 SWD over libgpiod; no RTT config, the runner only flashes.
-board_runner_args(openocd --config cod-nrp-gw.cfg)
+# Runs on the NR+Gate itself: the gateway's own openocd (libgpiod adapter, not
+# in the Zephyr SDK's build) with its site folder, where cod-nrp-gw.cfg drives
+# the nRF9151 SWD. No RTT config, the runner only flashes.
+board_runner_args(openocd --openocd=/usr/bin/openocd --openocd-search=/usr/share/openocd/site --config cod-nrp-gw.cfg)
 
 include(${ZEPHYR_BASE}/boards/common/nrfutil.board.cmake)
 include(${ZEPHYR_BASE}/boards/common/nrfjprog.board.cmake)
