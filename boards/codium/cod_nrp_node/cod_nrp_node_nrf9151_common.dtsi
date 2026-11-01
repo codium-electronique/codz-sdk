@@ -101,8 +101,8 @@
 			current-microamp = <500000>; // uA => 500mA
 			dischg-limit-microamp = <1000000>; // uA => 1A
 			vbus-limit-microamp = <500000>; // uA => 500mA
-			thermistor-ohms = <0>; // Ohms => 0Ohms
-			thermistor-beta = <0>;
+			thermistor-ohms = <10000>; // 10 kOhm NTC in the battery pack
+			thermistor-beta = <3380>;
 			term-current-percent = <10>;
 		};
 
